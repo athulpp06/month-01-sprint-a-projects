@@ -1,0 +1,206 @@
+{
+  "name": "ai resume matcher",
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are an expert technical recruiter. Review this resume text: [Drag the \"text\" variable from the Extract from File node] and compare it against these open jobs: [Drag your \"open_jobs\" variable from the Edit Fields node]. Reply with the single best matching job title and a 2-sentence explanation why.",
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        336,
+        48
+      ],
+      "id": "ac119754-cc7d-4e15-a36b-560ad0b7d31e",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        272,
+        240
+      ],
+      "id": "99661efe-4c4a-4102-b057-75a1502cb02b",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "tK31z3b6oUJwrc81",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -368,
+        48
+      ],
+      "id": "e0274151-4b8a-4fef-a41c-046743b1d7d4",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "fileSelector": "C:\\Users\\HP\\.n8n-files\\Dummy.pdf",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1.1,
+      "position": [
+        -192,
+        48
+      ],
+      "id": "613d4604-0fb6-45c6-9978-124c72d56e63",
+      "name": "Reads File"
+    },
+    {
+      "parameters": {
+        "operation": "pdf",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        -16,
+        48
+      ],
+      "id": "d23bdd5a-fd7d-4be3-b415-fde0fd543216",
+      "name": "Extract Data from Resume"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "eba8f065-b411-4788-a09d-9fa1f28fe3df",
+              "name": "open_jobs",
+              "value": "1. AI Engineer (Python, Machine Learning) \n 2. Frontend Developer (React, Tailwind) \n 3. Cloud Architect (AWS, Docker)",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        160,
+        48
+      ],
+      "id": "9cf78dc0-d133-4a71-be15-e6cfaf4d9409",
+      "name": "Shows Eligibility"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a6b133e3-be5d-4402-9336-7693bcceab2a",
+              "name": "text",
+              "value": "={{ $json.text }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        656,
+        48
+      ],
+      "id": "e0e58f0a-ede6-4e95-940e-a0a414772aca",
+      "name": "Shows Result"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Shows Result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Reads File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Reads File": {
+      "main": [
+        [
+          {
+            "node": "Extract Data from Resume",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Data from Resume": {
+      "main": [
+        [
+          {
+            "node": "Shows Eligibility",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Shows Eligibility": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "38fc612f-4145-4fa0-9ceb-ea3ae94d7181",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "4c116f0452e51577b4b6c536a0b8a3371f0f3db8d75da256cc0f4e7f99a203e1"
+  },
+  "id": "KNvvYilOcKXR7Zfy",
+  "tags": []
+}
