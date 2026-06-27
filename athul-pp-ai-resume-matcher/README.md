@@ -24,7 +24,7 @@ athul-pp-ai-resume-matcher/
 ## Features
 
 * **Automated Parsing:** Extracts raw text from binary PDF files using built-in n8n utilities.
-* **AI-Powered Matching:** Leverages Google Gemini 1.5-flash for intelligent skill-to-job comparison.
+* **AI-Powered Matching:** Leverages Google Gemini 2.5-flash for intelligent skill-to-job comparison.
 * **Multi-Source Integration:** Combines local file input with AI-based reasoning and structured data.
 * **Security-First:** Credentials are managed securely via n8n’s encrypted credential manager.
 
