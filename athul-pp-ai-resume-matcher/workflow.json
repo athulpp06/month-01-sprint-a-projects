@@ -3,62 +3,32 @@
   "nodes": [
     {
       "parameters": {
-        "promptType": "define",
-        "text": "=You are an expert technical recruiter. Review this resume text: [Drag the \"text\" variable from the Extract from File node] and compare it against these open jobs: [Drag your \"open_jobs\" variable from the Edit Fields node]. Reply with the single best matching job title and a 2-sentence explanation why.",
-        "batching": {}
-      },
-      "type": "@n8n/n8n-nodes-langchain.chainLlm",
-      "typeVersion": 1.9,
-      "position": [
-        336,
-        48
-      ],
-      "id": "ac119754-cc7d-4e15-a36b-560ad0b7d31e",
-      "name": "Basic LLM Chain"
-    },
-    {
-      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/15614Xy1n3y8Lk7jJRBXQhnNdLRoiVnkXya8OAac3K9U/edit?gid=0#gid=0",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Sheet1",
+          "mode": "name"
+        },
         "options": {}
       },
-      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
-      "typeVersion": 1,
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
       "position": [
-        272,
-        240
+        32,
+        192
       ],
-      "id": "99661efe-4c4a-4102-b057-75a1502cb02b",
-      "name": "Google Gemini Chat Model",
+      "id": "983e57ef-bbab-4b27-a6cf-5ba83e93168b",
+      "name": "Get row(s) in sheet",
       "credentials": {
-        "googlePalmApi": {
-          "id": "tK31z3b6oUJwrc81",
-          "name": "Google Gemini(PaLM) Api account"
+        "googleSheetsOAuth2Api": {
+          "id": "gN22ydHS2C84n7SU",
+          "name": "Google Sheets account"
         }
       }
-    },
-    {
-      "parameters": {},
-      "type": "n8n-nodes-base.manualTrigger",
-      "typeVersion": 1,
-      "position": [
-        -368,
-        48
-      ],
-      "id": "e0274151-4b8a-4fef-a41c-046743b1d7d4",
-      "name": "When clicking ‘Execute workflow’"
-    },
-    {
-      "parameters": {
-        "fileSelector": "C:\\Users\\HP\\.n8n-files\\Dummy.pdf",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.readWriteFile",
-      "typeVersion": 1.1,
-      "position": [
-        -192,
-        48
-      ],
-      "id": "613d4604-0fb6-45c6-9978-124c72d56e63",
-      "name": "Reads File"
     },
     {
       "parameters": {
@@ -68,61 +38,144 @@
       "type": "n8n-nodes-base.extractFromFile",
       "typeVersion": 1.1,
       "position": [
-        -16,
-        48
+        32,
+        32
       ],
-      "id": "d23bdd5a-fd7d-4be3-b415-fde0fd543216",
-      "name": "Extract Data from Resume"
+      "id": "e6a503e4-2ace-4569-9e25-28b8f80f3d32",
+      "name": "Extract from File"
     },
     {
       "parameters": {
-        "assignments": {
-          "assignments": [
-            {
-              "id": "eba8f065-b411-4788-a09d-9fa1f28fe3df",
-              "name": "open_jobs",
-              "value": "1. AI Engineer (Python, Machine Learning) \n 2. Frontend Developer (React, Tailwind) \n 3. Cloud Architect (AWS, Docker)",
-              "type": "string"
-            }
-          ]
-        },
+        "mode": "combine",
+        "combineBy": "combineByPosition",
         "options": {}
       },
-      "type": "n8n-nodes-base.set",
-      "typeVersion": 3.4,
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
       "position": [
-        160,
-        48
+        224,
+        112
       ],
-      "id": "9cf78dc0-d133-4a71-be15-e6cfaf4d9409",
-      "name": "Shows Eligibility"
+      "id": "867176d1-22b9-46c8-ba37-2f9f6189b386",
+      "name": "Merge"
     },
     {
       "parameters": {
-        "assignments": {
-          "assignments": [
-            {
-              "id": "a6b133e3-be5d-4402-9336-7693bcceab2a",
-              "name": "text",
-              "value": "={{ $json.text }}",
-              "type": "string"
-            }
-          ]
-        },
+        "promptType": "define",
+        "text": "=You are an expert technical recruiter. Review the following resume: \n\n{{ $json.text }}\n\nCompare it against this list of open jobs: \n\n{{ JSON.stringify($('Get row(s) in sheet').all()) }}\n\nReturn only the single best-matching job title and a 2-sentence explanation of why it is the best fit.",
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        400,
+        112
+      ],
+      "id": "a06d98fb-c156-4ccb-b2bf-0641955b2404",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
         "options": {}
       },
-      "type": "n8n-nodes-base.set",
-      "typeVersion": 3.4,
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
       "position": [
-        656,
-        48
+        336,
+        304
       ],
-      "id": "e0e58f0a-ede6-4e95-940e-a0a414772aca",
-      "name": "Shows Result"
+      "id": "97b02050-36fd-4671-8335-211f26e4a642",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "tK31z3b6oUJwrc81",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {
+          "download": true
+        }
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -176,
+        112
+      ],
+      "id": "58d2373a-8345-4a9f-9774-e016bbb26dcc",
+      "name": "Telegram Trigger",
+      "webhookId": "4b16a366-fd7a-4580-9b8e-7f5f447fba4e",
+      "credentials": {
+        "telegramApi": {
+          "id": "mKDVlsLCHWjslbjp",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "={{ $json.text }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        704,
+        112
+      ],
+      "id": "44ff4842-aebe-4953-9f84-bbdbb55b6f0e",
+      "name": "Send a text message",
+      "webhookId": "36231560-3463-439d-86fb-db503d0d7a4f",
+      "credentials": {
+        "telegramApi": {
+          "id": "mKDVlsLCHWjslbjp",
+          "name": "Telegram account"
+        }
+      }
     }
   ],
   "pinData": {},
   "connections": {
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
     "Google Gemini Chat Model": {
       "ai_languageModel": [
         [
@@ -134,55 +187,27 @@
         ]
       ]
     },
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
     "Basic LLM Chain": {
       "main": [
         [
           {
-            "node": "Shows Result",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "When clicking ‘Execute workflow’": {
-      "main": [
-        [
-          {
-            "node": "Reads File",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Reads File": {
-      "main": [
-        [
-          {
-            "node": "Extract Data from Resume",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Extract Data from Resume": {
-      "main": [
-        [
-          {
-            "node": "Shows Eligibility",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Shows Eligibility": {
-      "main": [
-        [
-          {
-            "node": "Basic LLM Chain",
+            "node": "Send a text message",
             "type": "main",
             "index": 0
           }
@@ -196,7 +221,7 @@
     "binaryMode": "separate",
     "availableInMCP": false
   },
-  "versionId": "38fc612f-4145-4fa0-9ceb-ea3ae94d7181",
+  "versionId": "dd4ae8a9-0d6d-4262-859c-ac2df684ffe8",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "4c116f0452e51577b4b6c536a0b8a3371f0f3db8d75da256cc0f4e7f99a203e1"

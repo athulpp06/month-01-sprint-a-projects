@@ -1,55 +1,59 @@
-# AI Resume Matcher
+# AI Resume Matcher Bot
 
-A production-ready n8n automation workflow designed to parse resumes and match candidates against open job roles using AI-driven analysis.
+An automated, multi-source AI recruitment automation workflow built using **n8n**, **Google Gemini**, **Google Sheets**, and **Telegram**. This system dynamically matches an uploaded resume against an active job board spreadsheet and returns the single best-matching job title with a concise reasoning summary directly back to the user via Telegram.
 
-## Project Overview
+---
 
-This project automates the manual process of resume screening. It accepts a PDF resume, extracts the text, and utilizes the Google Gemini API to compare the candidate's skills against a pre-defined set of open job positions.
+## Repository File Structure
 
-## Folder Structure
+* **`workflow.json`**: The exported n8n workflow canvas configuration (contains node logic; does not contain sensitive API credentials).
+* **`Dummy.pdf`**: Sample resume file used for system testing.
+* **`screenshot-workflow.jpg`**: A visual screenshot of the completed n8n canvas layout.
+* **`output.jpg`**: Visual proof demonstrating a successful execution and matching result from the bot interface.
+* **`configuration-spec.txt`**: Technical configuration environment setup details.
+* **`README.md`**: Project documentation and architecture details.
 
-As seen in image_98f3ed.png, the project is organized as follows:
+---
 
-```text
-athul-pp-ai-resume-matcher/
-├── configuration-spec.txt    # Integration and mechanics documentation
-├── Dummy.pdf                 # Sample resume used for testing
-├── output.txt                # Resulting match output from the final node
-├── README.md                 # Project documentation
-├── Screenshot-workflow.jpg   # Visual map of the n8n canvas
-└── workflow.json             # Exported automation blueprint
+## Key Features
+
+* **Telegram Interface**: Replaces manual file triggers with a remote conversational bot, enabling mobile resume submission.
+* **Secure Webhook Tunneling**: Integrates `ngrok` to bypass local networking restrictions, creating a secure HTTPS bridge for real-time Telegram event triggers.
+* **Dynamic Job Board Retrieval**: Automatically pulls all active job openings, titles, and descriptions from a live Google Sheet using secure Google OAuth2 authorization.
+* **Advanced AI Orchestration**: Utilizes n8n's Advanced AI framework (**Basic LLM Chain** paired with a **Google Gemini Chat Model**) to process both unstructured PDF text and tabular sheet data in a single prompt execution.
+
+---
+
+## Technical Workflow Architecture
+
+1. **Intake**: The user uploads a resume (`.pdf`) to the Telegram Bot. The **Telegram Trigger** fetches the file stream into local binary storage (`attachment_0`).
+2. **Extraction**: The **Extract from File** node parses the raw binary data into a string variable (`text`).
+3. **Database Pull**: The **Google Sheets** node executes a `Get row(s)` operation with data pooling turned on (`Return All`), reading the global list of target roles.
+4. **Data Aggregation**: A **Merge** node groups the parsed profile text with the full structural job board array.
+5. **AI Evaluation**: The **Basic LLM Chain** compiles the combined context window and injects it into a structured prompt evaluated by `gemini-1.5-flash`.
+6. **Delivery**: A final **Telegram Action** node targets the sender's dynamic Chat ID, replying with the matching role and evaluation notes.
+
+---
+
+## Setup and Deployment
+
+### 1. External Integrations
+
+* **Telegram**: Generate an access token via `@BotFather` and initialize the chat conversation by sending `/start` to your bot.
+* **Google Cloud Console**: Establish a project, enable the **Google Sheets API**, generate an OAuth Consent Screen configured for an External testing audience, and add your development profile as an authorized test account.
+
+### 2. Local Environment Execution
+
+Expose your local development port and inject the secure HTTPS address back into your n8n configuration framework:
+
+```bash
+# Terminal 1: Initialize the public tunnel
+ngrok http 5678
+
+# Terminal 2: Bind the environmental variable and launch n8n
+set WEBHOOK_URL=https://<your-generated-id>.ngrok-free.app
+npx n8n
 
 ```
 
-## Features
-
-* **Automated Parsing:** Extracts raw text from binary PDF files using built-in n8n utilities.
-* **AI-Powered Matching:** Leverages Google Gemini 2.5-flash for intelligent skill-to-job comparison.
-* **Multi-Source Integration:** Combines local file input with AI-based reasoning and structured data.
-* **Security-First:** Credentials are managed securely via n8n’s encrypted credential manager.
-
-## Workflow Structure
-
-1. **Manual Trigger:** Initiates the workflow execution.
-2. **Read Binary File:** Fetches the resume from the designated secure folder.
-3. **Extract from File:** Parses PDF data into processable text.
-4. **Edit Fields (Set):** Defines the list of open job roles.
-5. **Google Gemini:** Processes the resume against job requirements to generate matches.
-
-## Requirements
-
-* **n8n:** Latest version.
-* **Google Gemini API Key:** Configured in n8n Credentials.
-* **PDF File:** Placed in the designated `.n8n-files` directory.
-
-## Installation & Usage
-
-1. Import the `workflow.json` into your n8n instance.
-2. Ensure your Gemini API credentials are added to the n8n Credential Manager.
-3. Place your resume file in the secure `C:\Users\HP\.n8n-files\` directory.
-4. Execute the workflow manually to generate the match result, which is captured in `output.txt`.
-
-## Submission Details
-
-* **Author:** Athul P P
-* **Project Name:** AI Resume Matcher
+Once running, import the `workflow.json` file into your n8n editor, update your credentials, turn the workflow status toggle to **Active**, and test by uploading a file.
